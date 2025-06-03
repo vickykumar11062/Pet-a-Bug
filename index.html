@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bogger the Beetle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #8BC34A;
+      --primary-dark: #689F38;
+      --primary-light: #DCEDC8;
+      --secondary: #FF9800;
+      --secondary-dark: #F57C00;
+      --accent: #FF5722;
+      --dark: #2E7D32;
+      --light: #F1F8E9;
+      --text: #212121;
+      --text-light: #757575;
+      --bg-gradient: linear-gradient(135deg, #E1F5FE 0%, #B3E5FC 100%);
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+      --border-radius: 16px;
+      --spacing-xs: 8px;
+      --spacing-sm: 12px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      padding: var(--spacing-md);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: var(--spacing-lg);
+      text-align: center;
+      position: relative;
+    }
+
+    .pet-level {
+      position: absolute;
+      top: -12px;
+      right: var(--spacing-lg);
+      background: var(--secondary);
+      color: white;
+      padding: var(--spacing-xs) var(--spacing-md);
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .pet-name {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .pet-subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .main-content {
+      padding: var(--spacing-lg);
+    }
+
+    .pet-area {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+      position: relative;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pet-container {
+      position: relative;
+    }
+
+    .pet-svg {
+      width: 150px;
+      height: 150px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .pet-svg.happy {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .heart-glow {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      color: var(--accent);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .heart-glow.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-10px);
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: var(--spacing-md);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: var(--spacing-xs);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .stat-bar {
+      height: 8px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .stat-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .hunger-fill {
+      background: linear-gradient(90deg, var(--secondary), var(--accent));
+    }
+
+    .happiness-fill {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .hygiene-fill {
+      background: linear-gradient(90deg, var(--primary), #4CAF50);
+    }
+
+    .stat-value {
+      font-weight: 600;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .actions-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .action-btn {
+      background: white;
+      border: none;
+      border-radius: var(--border-radius);
+      padding: var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-xs);
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      font-weight: 500;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn i {
+      font-size: 24px;
+    }
+
+    .feed-btn {
+      color: var(--secondary-dark);
+    }
+
+    .play-btn {
+      color: var(--primary-dark);
+    }
+
+    .clean-btn {
+      color: #2196F3;
+    }
+
+    .minigame-container {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      display: none;
+    }
+
+    .minigame-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .minigame-title {
+      font-weight: 600;
+      color: var(--primary-dark);
+    }
+
+    .close-minigame {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .math-question {
+      background: var(--primary-light);
+      padding: var(--spacing-md);
+      border-radius: var(--border-radius);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: var(--spacing-md);
+      text-align: center;
+    }
+
+    .math-answers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .math-answer {
+      background: white;
+      border: 2px solid #f0f0f0;
+      border-radius: var(--border-radius);
+      padding: var(--spacing-md);
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+    }
+
+    .math-answer:hover {
+      border-color: var(--primary);
+    }
+
+    .math-answer.correct {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+
+    .math-answer.wrong {
+      background: #FFEBEE;
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .section {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      color: var(--primary-dark);
+    }
+
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: var(--spacing-sm);
+    }
+
+    .achievement-card {
+      background: var(--primary-light);
+      border-radius: var(--border-radius);
+      padding: var(--spacing-md);
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .achievement-card.completed {
+      background: var(--primary);
+      color: white;
+    }
+
+    .achievement-icon {
+      font-size: 24px;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .achievement-name {
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .achievement-progress {
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 2px var(--spacing-xs);
+      border-radius: 10px;
+      display: inline-block;
+    }
+
+    .achievement-card.completed .achievement-progress {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .task-list {
+      display: grid;
+      gap: var(--spacing-sm);
+    }
+
+    .task-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: #FAFAFA;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+    }
+
+    .task-item.completed {
+      background: var(--primary-light);
+    }
+
+    .task-info {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .task-icon {
+      font-size: 18px;
+    }
+
+    .task-name {
+      font-size: 14px;
+    }
+
+    .task-reward {
+      background: var(--secondary);
+      color: white;
+      padding: 2px var(--spacing-sm);
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: var(--spacing-sm);
+    }
+
+    .stat-detail-card {
+      background: #FAFAFA;
+      border-radius: var(--border-radius);
+      padding: var(--spacing-md);
+      text-align: center;
+    }
+
+    .stat-detail-icon {
+      font-size: 24px;
+      margin-bottom: var(--spacing-xs);
+      color: var(--primary-dark);
+    }
+
+    .stat-detail-value {
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 2px;
+    }
+
+    .stat-detail-label {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .status-message {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      opacity: 0;
+      transition: var(--transition);
+      pointer-events: none;
+    }
+
+    .status-message.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(10px);
+    }
+
+    .food-item {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      font-size: 24px;
+      cursor: grab;
+      transition: var(--transition);
+      z-index: 10;
+      pointer-events: auto;
+    }
+
+    .food-item:active {
+      cursor: grabbing;
+      transform: scale(1.2);
+    }
+
+    @media (max-width: 600px) {
+
+      .stats-container,
+      .actions-container {
+        grid-template-columns: 1fr;
+      }
+
+      .math-answers {
+        grid-template-columns: 1fr;
+      }
+
+      .achievements-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* Animation for food item */
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    .floating {
+      animation: float 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="pet-level">Level 5</div>
+      <h1 class="pet-name">Bogger the Beetle</h1>
+      <p class="pet-subtitle">Your friendly mathematical beetle companion</p>
+    </div>
+
+    <div class="main-content">
+      <div class="pet-area" id="petArea">
+        <div class="pet-container">
+          <div class="heart-glow" id="heartGlow">❤️</div>
+          <svg class="pet-svg" id="petSvg" viewBox="0 0 100 100">
+            <ellipse cx="50" cy="70" rx="25" ry="15" fill="#2d5016" opacity="0.3" />
+            <ellipse cx="50" cy="50" rx="20" ry="25" fill="#4a7c59" />
+            <ellipse cx="50" cy="45" rx="18" ry="20" fill="#5d8a6b" />
+            <circle cx="45" cy="35" r="3" fill="#000" />
+            <circle cx="55" cy="35" r="3" fill="#000" />
+            <circle cx="46" cy="36" r="1" fill="#fff" />
+            <circle cx="56" cy="36" r="1" fill="#fff" />
+            <path d="M 40 30 Q 35 25 30 30" stroke="#2d5016" stroke-width="2" fill="none" />
+            <path d="M 60 30 Q 65 25 70 30" stroke="#2d5016" stroke-width="2" fill="none" />
+            <path id="happyMouth" d="M 40 40 Q 50 45 60 40" stroke="#2d5016" stroke-width="1.5" fill="none" />
+            <path id="sadMouth" d="M 40 45 Q 50 40 60 45" stroke="#2d5016" stroke-width="1.5" fill="none"
+              style="display: none" />
+            <ellipse cx="30" cy="45" rx="3" ry="8" fill="#4a7c59" />
+            <ellipse cx="70" cy="45" rx="3" ry="8" fill="#4a7c59" />
+            <ellipse cx="25" cy="55" rx="2" ry="6" fill="#4a7c59" />
+            <ellipse cx="75" cy="55" rx="2" ry="6" fill="#4a7c59" />
+            <ellipse cx="28" cy="65" rx="2" ry="5" fill="#4a7c59" />
+            <ellipse cx="72" cy="65" rx="2" ry="5" fill="#4a7c59" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-label"><i class="fas fa-utensils"></i> Hunger</div>
+          <div class="stat-bar">
+            <div class="stat-fill hunger-fill" id="hungerBar" style="width: 80%"></div>
+          </div>
+          <div class="stat-value" id="hungerValue">80</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="fas fa-smile"></i> Happiness</div>
+          <div class="stat-bar">
+            <div class="stat-fill happiness-fill" id="happinessBar" style="width: 45%"></div>
+          </div>
+          <div class="stat-value" id="happinessValue">45</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="fas fa-broom"></i> Hygiene</div>
+          <div class="stat-bar">
+            <div class="stat-fill hygiene-fill" id="hygieneBar" style="width: 90%"></div>
+          </div>
+          <div class="stat-value" id="hygieneValue">90</div>
+        </div>
+      </div>
+
+      <div class="actions-container">
+        <button class="action-btn feed-btn" id="feedBtn">
+          <i class="fas fa-leaf"></i>
+          <span>Feed</span>
+        </button>
+        <button class="action-btn play-btn" id="playBtn">
+          <i class="fas fa-calculator"></i>
+          <span>Math</span>
+        </button>
+        <button class="action-btn clean-btn" id="cleanBtn">
+          <i class="fas fa-shower"></i>
+          <span>Clean</span>
+        </button>
+      </div>
+
+      <div class="minigame-container" id="minigameContainer">
+        <div class="minigame-header">
+          <h3 class="minigame-title">Math Challenge</h3>
+          <button class="close-minigame" id="closeMinigame"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="math-question" id="mathQuestion">5 + 3 = ?</div>
+        <div class="math-answers" id="mathAnswers">
+          <div class="math-answer" data-answer="7">7</div>
+          <div class="math-answer" data-answer="8">8</div>
+          <div class="math-answer" data-answer="9">9</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title"><i class="fas fa-trophy"></i> Achievements</h3>
+        <div class="achievements-grid">
+          <div class="achievement-card completed">
+            <div class="achievement-icon">🍃</div>
+            <div class="achievement-name">Leaf Lover</div>
+            <div class="achievement-progress">15/15</div>
+          </div>
+          <div class="achievement-card">
+            <div class="achievement-icon">🧮</div>
+            <div class="achievement-name">Math Whiz</div>
+            <div class="achievement-progress">8/10</div>
+          </div>
+          <div class="achievement-card">
+            <div class="achievement-icon">💧</div>
+            <div class="achievement-name">Clean Freak</div>
+            <div class="achievement-progress">12/15</div>
+          </div>
+          <div class="achievement-card completed">
+            <div class="achievement-icon">❤️</div>
+            <div class="achievement-name">Best Friends</div>
+            <div class="achievement-progress">5/5</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title"><i class="fas fa-tasks"></i> Daily Tasks</h3>
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-info">
+              <div class="task-icon">🍃</div>
+              <div class="task-name">Feed 3 times</div>
+            </div>
+            <div class="task-reward">+10 XP</div>
+          </div>
+          <div class="task-item completed">
+            <div class="task-info">
+              <div class="task-icon">🧮</div>
+              <div class="task-name">Solve 5 problems</div>
+            </div>
+            <div class="task-reward">+15 XP</div>
+          </div>
+          <div class="task-item">
+            <div class="task-info">
+              <div class="task-icon">💧</div>
+              <div class="task-name">Clean 2 times</div>
+            </div>
+            <div class="task-reward">+8 XP</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title"><i class="fas fa-chart-line"></i> Stats</h3>
+        <div class="stats-grid">
+          <div class="stat-detail-card">
+            <div class="stat-detail-icon"><i class="fas fa-bolt"></i></div>
+            <div class="stat-detail-value">42</div>
+            <div class="stat-detail-label">Energy</div>
+          </div>
+          <div class="stat-detail-card">
+            <div class="stat-detail-icon"><i class="fas fa-calculator"></i></div>
+            <div class="stat-detail-value">18</div>
+            <div class="stat-detail-label">Problems Solved</div>
+          </div>
+          <div class="stat-detail-card">
+            <div class="stat-detail-icon"><i class="fas fa-star"></i></div>
+            <div class="stat-detail-value">3</div>
+            <div class="stat-detail-label">Level Progress</div>
+          </div>
+          <div class="stat-detail-card">
+            <div class="stat-detail-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-detail-value">85%</div>
+            <div class="stat-detail-label">Accuracy</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-message" id="statusMessage"></div>
+
+  <script>
+    class BugPet {
+      constructor() {
+        this.stats = {
+          hunger: 80,
+          happiness: 45,
+          hygiene: 90
+        };
+        this.maxStats = 100;
+        this.minStats = 0;
+        this.decayRate = 1;
+        this.lastUpdate = Date.now();
+        this.level = 5;
+        this.xp = 120;
+        this.mathProblemsSolved = 18;
+        this.accuracy = 85;
+        this.energy = 42;
+        this.isDragging = false;
+        this.currentFood = null;
+        this.currentMathAnswer = null;
+        this.dragOffset = { x: 0, y: 0 };
+
+        this.elements = {
+          hungerBar: document.getElementById('hungerBar'),
+          hungerValue: document.getElementById('hungerValue'),
+          happinessBar: document.getElementById('happinessBar'),
+          happinessValue: document.getElementById('happinessValue'),
+          hygieneBar: document.getElementById('hygieneBar'),
+          hygieneValue: document.getElementById('hygieneValue'),
+          petSvg: document.getElementById('petSvg'),
+          heartGlow: document.getElementById('heartGlow'),
+          statusMessage: document.getElementById('statusMessage'),
+          minigameContainer: document.getElementById('minigameContainer'),
+          mathQuestion: document.getElementById('mathQuestion'),
+          mathAnswers: document.getElementById('mathAnswers'),
+          petArea: document.getElementById('petArea'),
+          happyMouth: document.getElementById('happyMouth'),
+          sadMouth: document.getElementById('sadMouth')
+        };
+
+        this.init();
+        this.loadGame();
+        this.startGameLoop();
+      }
+
+      init() {
+        document.getElementById('feedBtn').addEventListener('click', () => this.feed());
+        document.getElementById('playBtn').addEventListener('click', () => this.play());
+        document.getElementById('cleanBtn').addEventListener('click', () => this.clean());
+        document.getElementById('closeMinigame').addEventListener('click', () => this.closeMinigame());
+
+        this.elements.petSvg.addEventListener('click', () => this.petInteraction());
+        this.elements.mathAnswers.addEventListener('click', (e) => this.handleMathAnswer(e));
+
+        // Touch events for mobile
+        this.elements.petArea.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+        this.elements.petArea.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+        this.elements.petArea.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
+
+        // Mouse events for desktop
+        this.elements.petArea.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+        this.elements.petArea.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+        this.elements.petArea.addEventListener('mouseup', (e) => this.handleMouseUp(e));
+      }
+
+      handleTouchStart(e) {
+        if (e.target.classList.contains('food-item')) {
+          e.preventDefault();
+          const touch = e.touches[0];
+          this.startDrag(e.target, touch.clientX, touch.clientY);
+        }
+      }
+
+      handleTouchMove(e) {
+        if (this.isDragging) {
+          e.preventDefault();
+          const touch = e.touches[0];
+          this.updateDrag(touch.clientX, touch.clientY);
+        }
+      }
+
+      handleTouchEnd(e) {
+        if (this.isDragging) {
+          e.preventDefault();
+          this.endDrag();
+        }
+      }
+
+      handleMouseDown(e) {
+        if (e.target.classList.contains('food-item')) {
+          e.preventDefault();
+          this.startDrag(e.target, e.clientX, e.clientY);
+        }
+      }
+
+      handleMouseMove(e) {
+        if (this.isDragging) {
+          e.preventDefault();
+          this.updateDrag(e.clientX, e.clientY);
+        }
+      }
+
+      handleMouseUp(e) {
+        if (this.isDragging) {
+          e.preventDefault();
+          this.endDrag();
+        }
+      }
+
+      startDrag(element, clientX, clientY) {
+        this.isDragging = true;
+        this.currentFood = element;
+        const rect = element.getBoundingClientRect();
+        this.dragOffset = {
+          x: clientX - rect.left,
+          y: clientY - rect.top
+        };
+        element.style.zIndex = '20';
+      }
+
+      updateDrag(clientX, clientY) {
+        if (this.currentFood) {
+          const petAreaRect = this.elements.petArea.getBoundingClientRect();
+          const x = clientX - petAreaRect.left - this.dragOffset.x;
+          const y = clientY - petAreaRect.top - this.dragOffset.y;
+
+          this.currentFood.style.left = `${Math.max(0, Math.min(x, petAreaRect.width - 40))}px`;
+          this.currentFood.style.top = `${Math.max(0, Math.min(y, petAreaRect.height - 40))}px`;
+        }
+      }
+
+      endDrag() {
+        if (this.currentFood) {
+          const petRect = this.elements.petSvg.getBoundingClientRect();
+          const foodRect = this.currentFood.getBoundingClientRect();
+
+          const distance = Math.sqrt(
+            Math.pow(petRect.left + petRect.width / 2 - (foodRect.left + foodRect.width / 2), 2) +
+            Math.pow(petRect.top + petRect.height / 2 - (foodRect.top + foodRect.height / 2), 2)
+          );
+
+          if (distance < 100) {
+            this.feedPet();
+            this.currentFood.remove();
+          }
+
+          this.currentFood = null;
+        }
+        this.isDragging = false;
+      }
+
+      createFoodItem() {
+        const food = document.createElement('div');
+        food.className = 'food-item floating';
+        food.innerHTML = '🍃';
+        food.style.position = 'absolute';
+        food.style.left = '50%';
+        food.style.top = '20px';
+        food.style.transform = 'translateX(-50%)';
+        this.elements.petArea.appendChild(food);
+        return food;
+      }
+
+      feed() {
+        const food = this.createFoodItem();
+        this.showMessage('Drag the leaf to Bogger!');
+      }
+
+      feedPet() {
+        this.changeStat('hunger', 15);
+        this.showMessage('Bogger enjoyed the tasty leaf!');
+        this.playHappyAnimation();
+        this.addXP(5);
+      }
+
+      play() {
+        this.elements.minigameContainer.style.display = 'block';
+        this.generateMathProblem();
+      }
+
+      clean() {
+        this.changeStat('hygiene', 20);
+        this.showMessage('Bogger feels fresh and clean!');
+        this.playHappyAnimation();
+        this.addXP(3);
+      }
+
+      generateMathProblem() {
+        const answers = this.elements.mathAnswers.children;
+        for (let answer of answers) {
+          answer.classList.remove('correct', 'wrong');
+        }
+
+        const operations = ['+', '-', '*'];
+        const operation = operations[Math.floor(Math.random() * operations.length)];
+
+        let num1, num2, correctAnswer;
+
+        switch (operation) {
+          case '+':
+            num1 = Math.floor(Math.random() * 10) + 1;
+            num2 = Math.floor(Math.random() * 10) + 1;
+            correctAnswer = num1 + num2;
+            break;
+          case '-':
+            num1 = Math.floor(Math.random() * 10) + 5;
+            num2 = Math.floor(Math.random() * num1) + 1;
+            correctAnswer = num1 - num2;
+            break;
+          case '*':
+            num1 = Math.floor(Math.random() * 5) + 1;
+            num2 = Math.floor(Math.random() * 5) + 1;
+            correctAnswer = num1 * num2;
+            break;
+        }
+
+        this.currentMathAnswer = correctAnswer;
+        this.elements.mathQuestion.textContent = `${num1} ${operation} ${num2} = ?`;
+
+        const wrongAnswers = [];
+        while (wrongAnswers.length < 2) {
+          const offset = Math.floor(Math.random() * 4) - 2;
+          const wrong = correctAnswer + offset;
+          if (wrong !== correctAnswer && wrong > 0 && !wrongAnswers.includes(wrong)) {
+            wrongAnswers.push(wrong);
+          }
+        }
+
+        const allAnswers = [correctAnswer, ...wrongAnswers];
+        this.shuffleArray(allAnswers);
+
+        for (let i = 0; i < answers.length; i++) {
+          answers[i].textContent = allAnswers[i];
+          answers[i].dataset.answer = allAnswers[i];
+        }
+      }
+
+      shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+      }
+
+      handleMathAnswer(e) {
+        if (e.target.classList.contains('math-answer')) {
+          const selectedAnswer = parseInt(e.target.dataset.answer);
+          const answers = this.elements.mathAnswers.children;
+
+          for (let answer of answers) {
+            answer.classList.remove('correct', 'wrong');
+          }
+
+          if (selectedAnswer === this.currentMathAnswer) {
+            e.target.classList.add('correct');
+            this.changeStat('happiness', 12);
+            this.showMessage('Correct! Bogger is happy!');
+            this.mathProblemsSolved++;
+            this.addXP(10);
+            this.updateAccuracy(true);
+
+            setTimeout(() => {
+              this.generateMathProblem();
+            }, 1500);
+          } else {
+            e.target.classList.add('wrong');
+            for (let answer of answers) {
+              if (parseInt(answer.dataset.answer) === this.currentMathAnswer) {
+                answer.classList.add('correct');
+                break;
+              }
+            }
+            this.showMessage('Try again!');
+            this.updateAccuracy(false);
+
+            setTimeout(() => {
+              this.generateMathProblem();
+            }, 2000);
+          }
+        }
+      }
+
+      updateAccuracy(isCorrect) {
+        const totalProblems = this.mathProblemsSolved + 1;
+        if (isCorrect) {
+          this.accuracy = Math.floor((this.accuracy * (totalProblems - 1) + 100) / totalProblems);
+        } else {
+          this.accuracy = Math.floor((this.accuracy * (totalProblems - 1)) / totalProblems);
+        }
+      }
+
+      addXP(amount) {
+        this.xp += amount;
+        const newLevel = Math.floor(this.xp / 100) + 1;
+        if (newLevel > this.level) {
+          this.level = newLevel;
+          this.showMessage(`Level Up! Bogger is now level ${this.level}`);
+        }
+      }
+
+      closeMinigame() {
+        this.elements.minigameContainer.style.display = 'none';
+      }
+
+      petInteraction() {
+        this.changeStat('happiness', 5);
+        this.showMessage('Bogger loves your attention!');
+        this.playHappyAnimation();
+      }
+
+      changeStat(statName, amount) {
+        this.stats[statName] = Math.max(this.minStats, Math.min(this.maxStats, this.stats[statName] + amount));
+        this.updateDisplay();
+        this.saveGame();
+      }
+
+      updateDisplay() {
+        for (let stat in this.stats) {
+          const value = this.stats[stat];
+          this.elements[`${stat}Bar`].style.width = `${value}%`;
+          this.elements[`${stat}Value`].textContent = value;
+        }
+
+        const hasLowStat = Object.values(this.stats).some(stat => stat < 60);
+
+        if (hasLowStat) {
+          this.elements.happyMouth.style.display = 'none';
+          this.elements.sadMouth.style.display = 'block';
+        } else {
+          this.elements.happyMouth.style.display = 'block';
+          this.elements.sadMouth.style.display = 'none';
+        }
+      }
+
+      showMessage(text) {
+        this.elements.statusMessage.textContent = text;
+        this.elements.statusMessage.classList.add('show');
+        setTimeout(() => {
+          this.elements.statusMessage.classList.remove('show');
+        }, 3000);
+      }
+
+      playHappyAnimation() {
+        this.elements.petSvg.classList.add('happy');
+        this.elements.heartGlow.classList.add('show');
+
+        setTimeout(() => {
+          this.elements.petSvg.classList.remove('happy');
+          this.elements.heartGlow.classList.remove('show');
+        }, 2000);
+      }
+
+      startGameLoop() {
+        setInterval(() => {
+          const now = Date.now();
+          const deltaTime = (now - this.lastUpdate) / 1000; // Convert to seconds
+          this.lastUpdate = now;
+
+          // Decay stats over time
+          this.changeStat('hunger', -this.decayRate * deltaTime);
+          this.changeStat('happiness', -this.decayRate * deltaTime * 0.8);
+          this.changeStat('hygiene', -this.decayRate * deltaTime * 0.5);
+
+          // Update energy based on stats
+          const averageStats = (this.stats.hunger + this.stats.happiness + this.stats.hygiene) / 3;
+          this.energy = Math.max(0, Math.min(100, averageStats * 0.8));
+        }, 1000);
+      }
+
+      saveGame() {
+        const gameData = {
+          stats: this.stats,
+          level: this.level,
+          xp: this.xp,
+          mathProblemsSolved: this.mathProblemsSolved,
+          accuracy: this.accuracy,
+          lastUpdate: Date.now()
+        };
+        localStorage.setItem('bugPetData', JSON.stringify(gameData));
+      }
+
+      loadGame() {
+        const savedData = localStorage.getItem('bugPetData');
+        if (savedData) {
+          const gameData = JSON.parse(savedData);
+          this.stats = gameData.stats || this.stats;
+          this.level = gameData.level || this.level;
+          this.xp = gameData.xp || this.xp;
+          this.mathProblemsSolved = gameData.mathProblemsSolved || this.mathProblemsSolved;
+          this.accuracy = gameData.accuracy || this.accuracy;
+          this.lastUpdate = gameData.lastUpdate || Date.now();
+
+          // Update display with loaded values
+          this.updateDisplay();
+        }
+      }
+    }
+
+    // Initialize the game when the DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      const bugPet = new BugPet();
+    });
+  </script>
+</body>
+
+</html>
+```
